@@ -30,12 +30,17 @@ export default class AlgoVMSP {
   private useStrategyForwardExtensionChecking = true
   private patternCount: number = 0
   private maxPatterns: (TreeSet<PatternVMSP> | null)[] = []
+  private startTime: number = 0
+  private executionFlag: ExecutionFlag
 
   constructor(private readonly maxGap: number | undefined = undefined,
     private readonly minimumPatternLength = 3,
     private readonly maximumPatternLength = 8,
     private readonly outputSequenceIdentifiers = false,
-    private readonly debug = false) { }
+    private readonly executionTimeThresholdInSeconds = 10,
+    private readonly debug = false) {
+    this.executionFlag = new ExecutionFlag(executionTimeThresholdInSeconds)
+  }
 
   public runFromSpmfFile(input: string, minsupRel: number) {
     const allFileContents = fs.readFileSync(input, 'utf8')
@@ -53,10 +58,14 @@ export default class AlgoVMSP {
         return acc.concat(elmts)
       }, [])
       .sort((a, b) => b.support - a.support)
+    if (!this.executionFlag.shouldContinue) {
+      console.warn('Stopped due to time threshold. Returning the patterns found so far.')
+    }
     return [patterns, BitMap.INTERSECTION_COUNT, this.patternCount] as const
   }
 
   public vmsp(fileLines: string[], minsupRel: number) {
+    this.executionFlag.start()
     const inMemoryDB: number[][] = []
     this.maxPatterns.push(null)
     this.maxPatterns.push(new TreeSet<PatternVMSP>(patternVMSPComparator))
@@ -113,6 +122,7 @@ export default class AlgoVMSP {
     lastAppendedItem: number) {
 
     let atLeastOneFrequentExtension = false
+    this.executionFlag.check()
 
     if (this.debug) {
       console.log("PREFIX: " + prefix.toString() + "  sn=" + sn + " in=" + _in)
@@ -137,10 +147,9 @@ export default class AlgoVMSP {
         prefixSStep.addItemSet(new ItemSet([item]))
 
         let hasFrequentExtension = false
-        if (this.maximumPatternLength >= m) {
+        if (this.maximumPatternLength >= m && this.executionFlag.shouldContinue) {
           hasFrequentExtension = this.dfsPruning(prefixSStep, newBitmap, sTemp, sTemp, item, m + 1, item)
         }
-
         if (!hasFrequentExtension && this.minimumPatternLength <= m) {
           atLeastOneFrequentExtension = true
           this.savePatternMultipleItems(prefixSStep, newBitmap, m)
@@ -159,13 +168,15 @@ export default class AlgoVMSP {
       this.useCMAPPruning
     )
 
+    this.executionFlag.check()
+
     for (let k = 0; k < iTemp.length; k++) {
       const item = iTemp[k]
       const prefixIStep = prefix.cloneSequence()
       prefixIStep.addItem(item, prefixIStep.nbrOfItemSets() - 1)
       const newBitmap = iTempBitmaps[k]
       let hasFrequentExtension = false
-      if (this.maximumPatternLength >= m) {
+      if (this.maximumPatternLength >= m && this.executionFlag.shouldContinue) {
         hasFrequentExtension = this.dfsPruning(prefixIStep, newBitmap, sTemp, iTemp, item, m + 1, item)
       }
       if (!hasFrequentExtension && this.minimumPatternLength <= m) {
@@ -283,6 +294,27 @@ export default class AlgoVMSP {
           .map(actionId => idToActionObject.get(actionId)),
         support: patt.support
       }
-    });
+    })
+  }
+}
+
+class ExecutionFlag {
+  private startTime: number
+  private threshold: number
+  public shouldContinue: boolean = true
+
+  constructor(thresholdInSeconds: number) {
+    this.startTime = Date.now()
+    this.threshold = thresholdInSeconds * 1000
+  }
+
+  start() {
+    this.startTime = Date.now()
+  }
+
+  check() {
+    if ((Date.now() - this.startTime) > this.threshold) {
+      this.shouldContinue = false
+    }
   }
 }
