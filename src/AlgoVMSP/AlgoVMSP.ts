@@ -30,7 +30,6 @@ export default class AlgoVMSP {
   private useStrategyForwardExtensionChecking = true
   private patternCount: number = 0
   private maxPatterns: (TreeSet<PatternVMSP> | null)[] = []
-  private startTime: number = 0
   private executionFlag: ExecutionFlag
 
   constructor(private readonly maxGap: number | undefined = undefined,

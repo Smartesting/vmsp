@@ -1,6 +1,6 @@
 {
   "name": "@smartesting/vmsp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This library offers an efficient TypeScript implementation of the VMSP (Vertical Mining of Sequential Patterns) algorithm. VMSP is an algorithm that mines frequent maximal sequential patterns in a database of sequences, proposed by Fournier-Viger et al.(2013).",
   "main": "dist/index.js",
   "types": "dist/types.d.ts",

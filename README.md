@@ -25,6 +25,7 @@ For the `AlgoVMSP` class and its associated methods, here's a breakdown of the t
 -   **minimumPatternLength**: (optional) Number specifying the minimum length of a pattern. Defaults to `3`.
 -   **maximumPatternLength**: (optional) Number specifying the maximum length of a pattern. Defaults to `8`.
 -   **outputSequenceIdentifiers**: (optional) Boolean indicating if output patterns should include the sequence identifiers that match them. Defaults to `false`.
+-   **executionTimeThresholdInSeconds**: (optional) Number specifying the maximum execution time in seconds. Expect the real execution time to be ~2seconds longer than the provided value. Defaults to `10`.
 -   **debug**: (optional) Boolean indicating if debug logs should be printed. Defaults to `false`.
 
 #### 2\. runFromSpmfFile Method:
