@@ -51,7 +51,7 @@ describe('Functional Tests', () => {
   })
 
   it('stops at execution time threshold and returns the obtains patterns so far', () => {
-    const maximumPatternLength = 3
+    const maximumPatternLength = 8
     const minsup = 0.002
     const algo = new AlgoVMSP(undefined, 1, maximumPatternLength, false, 2)
     const startTime = Date.now()
@@ -61,6 +61,20 @@ describe('Functional Tests', () => {
     console.log("Execution time: " + endTime)
     console.log("Nbr of Patterns: " + patternCount)
     expect(endTime).toBeGreaterThan(2000)
-    expect(endTime).toBeLessThan(3800)
+    expect(endTime).toBeLessThan(4300)
+  })
+
+  it.skip('long sessions', () => {
+    const maximumPatternLength = 8
+    const minsup = 0.001
+    const algo = new AlgoVMSP(undefined, 3, maximumPatternLength, false, 4)
+    const startTime = Date.now()
+    const [patterns, intersections, patternCount] =
+      algo.runFromSpmfFile('data/long_sessions.txt', minsup)
+    const endTime = Date.now() - startTime
+    console.log("Execution time: " + endTime)
+    console.log("Nbr of Patterns: " + patternCount)
+    expect(endTime).toBeGreaterThan(4000)
+    expect(endTime).toBeLessThan(6500)
   })
 })

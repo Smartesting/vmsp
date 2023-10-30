@@ -121,7 +121,6 @@ export default class AlgoVMSP {
     lastAppendedItem: number) {
 
     let atLeastOneFrequentExtension = false
-    this.executionFlag.check()
 
     if (this.debug) {
       console.log("PREFIX: " + prefix.toString() + "  sn=" + sn + " in=" + _in)
@@ -144,7 +143,7 @@ export default class AlgoVMSP {
         const item = sTemp[k]
         const prefixSStep = prefix.cloneSequence()
         prefixSStep.addItemSet(new ItemSet([item]))
-
+        this.executionFlag.check()
         let hasFrequentExtension = false
         if (this.maximumPatternLength >= m && this.executionFlag.shouldContinue) {
           hasFrequentExtension = this.dfsPruning(prefixSStep, newBitmap, sTemp, sTemp, item, m + 1, item)
@@ -167,14 +166,13 @@ export default class AlgoVMSP {
       this.useCMAPPruning
     )
 
-    this.executionFlag.check()
-
     for (let k = 0; k < iTemp.length; k++) {
       const item = iTemp[k]
       const prefixIStep = prefix.cloneSequence()
       prefixIStep.addItem(item, prefixIStep.nbrOfItemSets() - 1)
       const newBitmap = iTempBitmaps[k]
       let hasFrequentExtension = false
+      this.executionFlag.check()
       if (this.maximumPatternLength >= m && this.executionFlag.shouldContinue) {
         hasFrequentExtension = this.dfsPruning(prefixIStep, newBitmap, sTemp, iTemp, item, m + 1, item)
       }
