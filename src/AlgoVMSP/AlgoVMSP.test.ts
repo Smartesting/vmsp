@@ -6,10 +6,10 @@ describe('Functional Tests', () => {
     const maxGap = 1
     const maximumPatternLength = 8
     const minsup = 0.8
-    const [patterns, intersections, patternCount] =
+    const [patterns, intersections, executionTime] =
       new AlgoVMSP(maxGap, 1, maximumPatternLength).runFromSpmfFile('data/dataVMSP.txt', minsup)
     expect(intersections).toStrictEqual(117)
-    expect(patternCount).toStrictEqual(5)
+    expect(patterns.length).toStrictEqual(5)
     expect(patterns[0].support).toBe(9)
     expect(patterns[1].support).toBe(8)
     expect(patterns[2].support).toBe(8)
@@ -27,13 +27,13 @@ describe('Functional Tests', () => {
     const maximumPatternLength = 3
     const minsup = 0.3
     const algo = new AlgoVMSP(maxGap, 1, maximumPatternLength)
-    const [patterns, intersections, patternCount] =
+    const [patterns, intersections, executionTime] =
       algo.runFromSpmfFile('data/dataVMSP_sequencesFromPaper.txt', minsup)
     for (const pattern of patterns) {
       console.log(JSON.stringify(pattern))
     }
     expect(intersections).toStrictEqual(34)
-    expect(patternCount).toStrictEqual(7)
+    expect(patterns.length).toStrictEqual(7)
     expect(patterns[0].support).toBe(2)
     expect(patterns[1].support).toBe(2)
     expect(patterns[2].support).toBe(2)
@@ -55,11 +55,11 @@ describe('Functional Tests', () => {
     const minsup = 0.002
     const algo = new AlgoVMSP(undefined, 1, maximumPatternLength, false, 2)
     const startTime = Date.now()
-    const [patterns, intersections, patternCount] =
+    const [patterns, intersections, executionTime] =
       algo.runFromSpmfFile('data/dataVMSP_large.txt', minsup)
     const endTime = Date.now() - startTime
     console.log("Execution time: " + endTime)
-    console.log("Nbr of Patterns: " + patternCount)
+    console.log("Nbr of Patterns: " + patterns.length)
     expect(endTime).toBeGreaterThan(2000)
     expect(endTime).toBeLessThan(4300)
   })
@@ -69,11 +69,11 @@ describe('Functional Tests', () => {
     const minsup = 0.001
     const algo = new AlgoVMSP(undefined, 3, maximumPatternLength, false, 4)
     const startTime = Date.now()
-    const [patterns, intersections, patternCount] =
+    const [patterns, intersections, executionTime] =
       algo.runFromSpmfFile('data/long_sessions.txt', minsup)
     const endTime = Date.now() - startTime
     console.log("Execution time: " + endTime)
-    console.log("Nbr of Patterns: " + patternCount)
+    console.log("Nbr of Patterns: " + patterns.length)
     expect(endTime).toBeGreaterThan(4000)
     expect(endTime).toBeLessThan(6500)
   })

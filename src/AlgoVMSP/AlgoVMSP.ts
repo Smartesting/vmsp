@@ -19,17 +19,17 @@ import computeIExtendedBitmaps from "./utils/computeIExtendedBitmaps/computeIExt
 import { generateSessionBitmap } from "./utils/generateSessionBitMap"
 
 export default class AlgoVMSP {
-  private verticalDB = new Map<number, BitMap>()
-  private coocMapEquals: Map<number, Map<number, number>> = new Map<number, Map<number, number>>()
-  private coocMapAfter: Map<number, Map<number, number>> = new Map<number, Map<number, number>>()
-  private useCMAPPruning = true
-  private minSup = 0
-  private sequencesSize: number[] = []
-  private nbrSequences: number = 0
-  private lastBitIndex = 0
-  private useStrategyForwardExtensionChecking = true
-  private patternCount: number = 0
-  private maxPatterns: (TreeSet<PatternVMSP> | null)[] = []
+  private verticalDB
+  private coocMapEquals: Map<number, Map<number, number>>
+  private coocMapAfter: Map<number, Map<number, number>>
+  private useCMAPPruning
+  private minSup
+  private sequencesSize: number[]
+  private nbrSequences: number
+  private lastBitIndex
+  private useStrategyForwardExtensionChecking
+  private patternCount: number
+  private maxPatterns: (TreeSet<PatternVMSP> | null)[]
   private executionFlag: ExecutionFlag
 
   constructor(private readonly maxGap: number | undefined = undefined,
@@ -38,6 +38,17 @@ export default class AlgoVMSP {
     private readonly outputSequenceIdentifiers = false,
     private readonly executionTimeThresholdInSeconds = 10,
     private readonly debug = false) {
+    this.verticalDB = new Map<number, BitMap>()
+    this.coocMapEquals = new Map<number, Map<number, number>>()
+    this.coocMapAfter = new Map<number, Map<number, number>>()
+    this.useCMAPPruning = true
+    this.minSup = 0
+    this.sequencesSize = []
+    this.nbrSequences = 0
+    this.lastBitIndex = 0
+    this.useStrategyForwardExtensionChecking = true
+    this.patternCount = 0
+    this.maxPatterns = []
     this.executionFlag = new ExecutionFlag(executionTimeThresholdInSeconds)
   }
 
@@ -57,10 +68,11 @@ export default class AlgoVMSP {
         return acc.concat(elmts)
       }, [])
       .sort((a, b) => b.support - a.support)
+    this.executionFlag.check()
     if (!this.executionFlag.shouldContinue) {
       console.warn('Stopped due to time threshold. Returning the patterns found so far.')
     }
-    return [patterns, BitMap.INTERSECTION_COUNT, this.patternCount] as const
+    return [patterns, BitMap.INTERSECTION_COUNT, this.executionFlag.getExecutionTime()] as const
   }
 
   public vmsp(fileLines: string[], minsupRel: number) {
@@ -296,22 +308,29 @@ export default class AlgoVMSP {
 }
 
 class ExecutionFlag {
-  private startTime: number
+  private startTime: number = 0
   private threshold: number
+  private lastCheck: number = 0
   public shouldContinue: boolean = true
 
   constructor(thresholdInSeconds: number) {
-    this.startTime = Date.now()
     this.threshold = thresholdInSeconds * 1000
+    this.start()
   }
 
   start() {
     this.startTime = Date.now()
+    this.lastCheck = Date.now()
   }
 
   check() {
-    if ((Date.now() - this.startTime) > this.threshold) {
+    this.lastCheck = Date.now() - this.startTime
+    if (this.lastCheck > this.threshold) {
       this.shouldContinue = false
     }
+  }
+
+  getExecutionTime() {
+    return this.lastCheck
   }
 }
