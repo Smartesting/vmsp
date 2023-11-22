@@ -18,19 +18,22 @@ import computeSExtendedBitmaps from "./utils/computeSExtendedBitmaps/computeSExt
 import computeIExtendedBitmaps from "./utils/computeIExtendedBitmaps/computeIExtendedBitmaps"
 import { generateSessionBitmap } from "./utils/generateSessionBitMap"
 
+export type PatternType = 'closed' | 'maximal'
+
 export type VMSPOptions = Partial<{
   minPatternLength: number,
   maxPatternLength: number,
   maxGap: number,
   outputSequenceIdentifiers: boolean,
   executionTimeThresholdInSeconds: number,
-  patternType: 'closed' | 'maximal',
+  patternType: PatternType,
   useCMAPPruning: boolean,
   debug: boolean
 }>
 
 export default class AlgoVMSP {
   private readonly maxGap: number | undefined
+  private readonly patternType: PatternType
   private readonly minimumPatternLength: number
   private readonly maximumPatternLength: number
   private readonly outputSequenceIdentifiers: boolean
@@ -51,6 +54,7 @@ export default class AlgoVMSP {
 
   constructor(options: VMSPOptions = {}) {
     this.maxGap = options.maxGap
+    this.patternType = options.patternType ?? 'maximal'
     this.minimumPatternLength = options.minPatternLength ?? 3
     this.maximumPatternLength = options.maxPatternLength ?? 8
     this.outputSequenceIdentifiers = options.outputSequenceIdentifiers ?? false
@@ -221,7 +225,7 @@ export default class AlgoVMSP {
       console.log("Trying to save: " + item)
     }
 
-    if (!checkIfItemShouldBeSaved(item, bitmap, this.maxPatterns)) {
+    if (!checkIfItemShouldBeSaved(item, bitmap, this.maxPatterns, this.patternType)) {
       return
     }
 
@@ -244,7 +248,7 @@ export default class AlgoVMSP {
       console.log("*Trying to save: " + prefix)
     }
 
-    if (!checkIfItemsShouldBeSaved(prefix, bitmap, this.maxPatterns, length, this.maxGap)) {
+    if (!checkIfItemsShouldBeSaved(prefix, bitmap, this.maxPatterns, length, this.patternType, this.maxGap)) {
       return
     }
 
