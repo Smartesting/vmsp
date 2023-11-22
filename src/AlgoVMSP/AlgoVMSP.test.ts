@@ -1,13 +1,16 @@
-import AlgoVMSP from "./AlgoVMSP"
+import AlgoVMSP, { VMSPOptions } from "./AlgoVMSP"
 
 
 describe('Functional Tests', () => {
   it('returns the expected patterns - dataset from Java Implem', () => {
-    const maxGap = 1
-    const maximumPatternLength = 8
+    const options: VMSPOptions = {
+      maxGap: 1,
+      minPatternLength: 1,
+      maxPatternLength: 8
+    }
     const minsup = 0.8
     const [patterns, intersections, executionTime] =
-      new AlgoVMSP(maxGap, 1, maximumPatternLength).runFromSpmfFile('data/dataVMSP.txt', minsup)
+      new AlgoVMSP(options).runFromSpmfFile('data/dataVMSP.txt', minsup)
     expect(intersections).toStrictEqual(117)
     expect(patterns.length).toStrictEqual(5)
     expect(patterns[0].support).toBe(9)
@@ -23,10 +26,13 @@ describe('Functional Tests', () => {
   })
 
   it('returns the expected patterns - dataset from the article', () => {
-    const maxGap = 3
-    const maximumPatternLength = 3
+    const options: VMSPOptions = {
+      maxGap: 3,
+      minPatternLength: 1,
+      maxPatternLength: 3
+    }
     const minsup = 0.3
-    const algo = new AlgoVMSP(maxGap, 1, maximumPatternLength)
+    const algo = new AlgoVMSP(options)
     const [patterns, intersections, executionTime] =
       algo.runFromSpmfFile('data/dataVMSP_sequencesFromPaper.txt', minsup)
     for (const pattern of patterns) {
@@ -51,9 +57,14 @@ describe('Functional Tests', () => {
   })
 
   it('stops at execution time threshold and returns the obtains patterns so far', () => {
+    const options: VMSPOptions = {
+      minPatternLength: 1,
+      maxPatternLength: 8,
+      executionTimeThresholdInSeconds: 2
+    }
     const maximumPatternLength = 8
     const minsup = 0.002
-    const algo = new AlgoVMSP(undefined, 1, maximumPatternLength, false, 2)
+    const algo = new AlgoVMSP(options)
     const startTime = Date.now()
     const [patterns, intersections, executionTime] =
       algo.runFromSpmfFile('data/dataVMSP_large.txt', minsup)
@@ -65,9 +76,13 @@ describe('Functional Tests', () => {
   })
 
   it.skip('long sessions', () => {
+    const options: VMSPOptions = {
+      maxPatternLength: 8,
+      executionTimeThresholdInSeconds: 4
+    }
     const maximumPatternLength = 8
     const minsup = 0.001
-    const algo = new AlgoVMSP(undefined, 3, maximumPatternLength, false, 4)
+    const algo = new AlgoVMSP(options)
     const startTime = Date.now()
     const [patterns, intersections, executionTime] =
       algo.runFromSpmfFile('data/long_sessions.txt', minsup)

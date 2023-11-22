@@ -18,7 +18,24 @@ import computeSExtendedBitmaps from "./utils/computeSExtendedBitmaps/computeSExt
 import computeIExtendedBitmaps from "./utils/computeIExtendedBitmaps/computeIExtendedBitmaps"
 import { generateSessionBitmap } from "./utils/generateSessionBitMap"
 
+export type VMSPOptions = Partial<{
+  minPatternLength: number,
+  maxPatternLength: number,
+  maxGap: number,
+  outputSequenceIdentifiers: boolean,
+  executionTimeThresholdInSeconds: number,
+  patternType: 'closed' | 'maximal',
+  useCMAPPruning: boolean,
+  debug: boolean
+}>
+
 export default class AlgoVMSP {
+  private readonly maxGap: number | undefined
+  private readonly minimumPatternLength: number
+  private readonly maximumPatternLength: number
+  private readonly outputSequenceIdentifiers: boolean
+  private readonly executionTimeThresholdInSeconds: number
+  private readonly debug: boolean
   private verticalDB
   private coocMapEquals: Map<number, Map<number, number>>
   private coocMapAfter: Map<number, Map<number, number>>
@@ -32,12 +49,14 @@ export default class AlgoVMSP {
   private maxPatterns: (TreeSet<PatternVMSP> | null)[]
   private executionFlag: ExecutionFlag
 
-  constructor(private readonly maxGap: number | undefined = undefined,
-    private readonly minimumPatternLength = 3,
-    private readonly maximumPatternLength = 8,
-    private readonly outputSequenceIdentifiers = false,
-    private readonly executionTimeThresholdInSeconds = 10,
-    private readonly debug = false) {
+  constructor(options: VMSPOptions = {}) {
+    this.maxGap = options.maxGap
+    this.minimumPatternLength = options.minPatternLength ?? 3
+    this.maximumPatternLength = options.maxPatternLength ?? 8
+    this.outputSequenceIdentifiers = options.outputSequenceIdentifiers ?? false
+    this.executionTimeThresholdInSeconds = options.executionTimeThresholdInSeconds ?? 10
+    this.debug = options.debug ?? false
+
     this.verticalDB = new Map<number, BitMap>()
     this.coocMapEquals = new Map<number, Map<number, number>>()
     this.coocMapAfter = new Map<number, Map<number, number>>()
@@ -49,7 +68,7 @@ export default class AlgoVMSP {
     this.useStrategyForwardExtensionChecking = true
     this.patternCount = 0
     this.maxPatterns = []
-    this.executionFlag = new ExecutionFlag(executionTimeThresholdInSeconds)
+    this.executionFlag = new ExecutionFlag(this.executionTimeThresholdInSeconds)
   }
 
   public runFromSpmfFile(input: string, minsupRel: number) {
