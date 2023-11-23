@@ -1,18 +1,14 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/Smartesting/vmsp/compare/v1.0.2...main)
-
-### Info
+## [1.1.0](https://github.com/Smartesting/vmsp/compare/v1.0.2...v1.1.0)
 
 ### Added
 
+- Users can choose between closed or maximal patterns
+
 ### Changed
 
-### Deprecated
-
-### Removed
-
-### Fixed
+- Options passed to the algorithm are now a partial type for better readability
 
 ## [1.0.2](https://github.com/Smartesting/vmsp/compare/v1.0.1...1.0.2)
 
