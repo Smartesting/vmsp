@@ -1,6 +1,6 @@
-# VMSP
+# VMSP (Vertical Mining of Sequential Patterns)
 
-This library offers an efficient TypeScript implementation of the VMSP (Vertical Mining of Sequential Patterns) algorithm. VMSP is an algorithm that mines frequent maximal sequential patterns in a database of sequences, proposed by Fournier-Viger et al.(2013). 
+This library offers an efficient TypeScript implementation of the VMSP (Vertical Mining of Sequential Patterns) algorithm. VMSP is an algorithm that mines frequent maximal sequential patterns in a database of sequences, proposed by Fournier-Viger et al.(2013). However, this implementation has drifted a bit from the original algorithm, as it is also able to mine closed patterns as well. Hence, VMSP here stands for vertical mining of sequential patterns.
 
 
 ___
@@ -21,12 +21,13 @@ For the `AlgoVMSP` class and its associated methods, here's a breakdown of the t
 
 #### 1\. Constructor Parameters:
 
--   **maxGap**: (optional) Number specifying the maximum gap between two items in a pattern. Defaults to `undefined`, which means infinity gaps are allowed.
--   **minimumPatternLength**: (optional) Number specifying the minimum length of a pattern. Defaults to `3`.
--   **maximumPatternLength**: (optional) Number specifying the maximum length of a pattern. Defaults to `8`.
--   **outputSequenceIdentifiers**: (optional) Boolean indicating if output patterns should include the sequence identifiers that match them. Defaults to `false`.
--   **executionTimeThresholdInSeconds**: (optional) Number specifying the maximum execution time in seconds. Expect the real execution time to be ~2seconds longer than the provided value. Defaults to `10`.
--   **debug**: (optional) Boolean indicating if debug logs should be printed. Defaults to `false`.
+-   **maxGap**: Number specifying the maximum gap between two items in a pattern. Defaults to `undefined`, which means infinity gaps are allowed.
+-   **patternType**: Choose 'closed' or 'maximal' depending on the kind of pattern you're after. Defaults to `maximal`.
+-   **minimumPatternLength**: Number specifying the minimum length of a pattern. Defaults to `3`.
+-   **maximumPatternLength**: Number specifying the maximum length of a pattern. Defaults to `8`.
+-   **outputSequenceIdentifiers**: Boolean indicating if output patterns should include the sequence identifiers that match them. Defaults to `false`.
+-   **executionTimeThresholdInSeconds**: Number specifying the maximum execution time in seconds. Expect the real execution time to be ~2seconds longer than the provided value. Defaults to `10`.
+-   **debug**: Boolean indicating if debug logs should be printed. Defaults to `false`.
 
 #### 2\. runFromSpmfFile Method:
 
@@ -46,7 +47,7 @@ The primary output of this library is a set of patterns, with each pattern consi
 
 1.  **Patterns**: This includes the actual patterns and their support count.
 2.  **Bitmap Intersections**: Number of bitmap intersections performed during the algorithm's execution.
-3.  **Pattern Count**: Total number of patterns found.
+3.  **Execution Time**: Elapsed time in milliseconds.
 
 ___
 
@@ -57,13 +58,21 @@ To give a basic overview of how to use the library:
 ```javascript
 import AlgoVMSP from 'vmsp'
 
+// Set options
+const options: VMSPOptions = {
+  maxGap: 1,
+  minPatternLength: 1,
+  maxPatternLength: 5
+}
+
 // Create an instance of the VMSP algorithm
-const vmspInstance = new AlgoVMSP()
+const vmspInstance = new AlgoVMSP(options)
 
 // Load data from an SPMF file and run the algorithm
-const results = vmspInstance.runFromSpmfFile('path_to_input_file.txt', 0.01)
+const minSup: number = 0.01
+const results = vmspInstance.runFromSpmfFile('path_to_input_file.txt', minSup)
 
-console.log(results)
+vmspInstance.printResult()
 
 ```
 
