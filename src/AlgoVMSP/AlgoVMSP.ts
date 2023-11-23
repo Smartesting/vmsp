@@ -141,7 +141,7 @@ export default class AlgoVMSP {
       if (this.maximumPatternLength > 1) {
         hasExtension = this.dfsPruning(prefix, bitMap, frequentItems, frequentItems, item, 2, item)
       }
-      if (!hasExtension && this.minimumPatternLength < 2) {
+      if ((this.patternType === 'closed' || this.patternType === 'maximal' && !hasExtension) && this.minimumPatternLength < 2) {
         this.savePatternSingleItem(item, bitMap)
       }
     })
@@ -183,7 +183,7 @@ export default class AlgoVMSP {
         if (this.maximumPatternLength >= m && this.executionFlag.shouldContinue) {
           hasFrequentExtension = this.dfsPruning(prefixSStep, newBitmap, sTemp, sTemp, item, m + 1, item)
         }
-        if (!hasFrequentExtension && this.minimumPatternLength <= m) {
+        if ((this.patternType === 'closed' || this.patternType === 'maximal' && !hasFrequentExtension) && this.minimumPatternLength <= m) {
           atLeastOneFrequentExtension = true
           this.savePatternMultipleItems(prefixSStep, newBitmap, m)
         }
@@ -211,7 +211,7 @@ export default class AlgoVMSP {
       if (this.maximumPatternLength >= m && this.executionFlag.shouldContinue) {
         hasFrequentExtension = this.dfsPruning(prefixIStep, newBitmap, sTemp, iTemp, item, m + 1, item)
       }
-      if (!hasFrequentExtension && this.minimumPatternLength <= m) {
+      if ((this.patternType === 'closed' || this.patternType === 'maximal' && !hasFrequentExtension) && this.minimumPatternLength <= m) {
         atLeastOneFrequentExtension = true
         this.savePatternMultipleItems(prefixIStep, newBitmap, m)
       }
@@ -252,7 +252,7 @@ export default class AlgoVMSP {
       return
     }
 
-    const removedPatternsNumber = removeSavedPatternsContainedByNewItems(prefix, bitmap, this.maxPatterns, length)
+    const removedPatternsNumber = removeSavedPatternsContainedByNewItems(prefix, bitmap, this.maxPatterns, length, this.patternType, this.maxGap)
     this.patternCount -= removedPatternsNumber
 
     while (this.maxPatterns.length - 1 < length) {

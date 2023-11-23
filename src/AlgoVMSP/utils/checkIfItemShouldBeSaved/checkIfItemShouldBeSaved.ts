@@ -18,10 +18,9 @@ function checkIfEvenItemShouldBeSaved(item: number, bitmap: BitMap, maxPatterns:
         break
       }
 
-      if (pPrime.prefix.sumOfEvenItems >= item &&
-        bitmap.getSupport() >= pPrime.support &&
-        (patternType === "maximal" || bitmap.getSupport() === pPrime.support)) {
-        if (pPrime.prefix.containsItem(item)) {
+      if (pPrime.prefix.sumOfEvenItems >= item && bitmap.getSupport() >= pPrime.support) {
+        if ((patternType === 'maximal' || pPrime.support === bitmap.getSupport())
+          && pPrime.prefix.containsItem(item)) {
           return false
         }
       }
@@ -38,10 +37,9 @@ function checkIfOddItemShouldBeSaved(item: number, bitmap: BitMap, maxPatterns: 
         break
       }
 
-      if (pPrime.prefix.sumOfOddItems >= item &&
-        bitmap.getSupport() >= pPrime.support &&
-        (patternType === "maximal" || bitmap.getSupport() === pPrime.support)) {
-        if (pPrime.prefix.containsItem(item)) {
+      if (pPrime.prefix.sumOfOddItems >= item && bitmap.getSupport() >= pPrime.support) {
+        if ((patternType === 'maximal' || pPrime.support === bitmap.getSupport())
+          && pPrime.prefix.containsItem(item)) {
           return false
         }
       }

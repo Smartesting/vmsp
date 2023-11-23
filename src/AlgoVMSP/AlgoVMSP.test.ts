@@ -1,7 +1,7 @@
 import AlgoVMSP, { VMSPOptions } from "./AlgoVMSP"
 
 
-describe('Functional Tests', () => {
+describe('Maximal patterns', () => {
   it('returns the expected patterns - dataset from Java Implem', () => {
     const options: VMSPOptions = {
       maxGap: 1,
@@ -35,9 +35,6 @@ describe('Functional Tests', () => {
     const algo = new AlgoVMSP(options)
     const [patterns, intersections, executionTime] =
       algo.runFromSpmfFile('data/dataVMSP_sequencesFromPaper.txt', minsup)
-    for (const pattern of patterns) {
-      console.log(JSON.stringify(pattern))
-    }
     expect(intersections).toStrictEqual(34)
     expect(patterns.length).toStrictEqual(7)
     expect(patterns[0].support).toBe(2)
@@ -62,7 +59,6 @@ describe('Functional Tests', () => {
       maxPatternLength: 8,
       executionTimeThresholdInSeconds: 2
     }
-    const maximumPatternLength = 8
     const minsup = 0.002
     const algo = new AlgoVMSP(options)
     const startTime = Date.now()
@@ -80,7 +76,6 @@ describe('Functional Tests', () => {
       maxPatternLength: 8,
       executionTimeThresholdInSeconds: 4
     }
-    const maximumPatternLength = 8
     const minsup = 0.001
     const algo = new AlgoVMSP(options)
     const startTime = Date.now()
@@ -91,5 +86,115 @@ describe('Functional Tests', () => {
     console.log("Nbr of Patterns: " + patterns.length)
     expect(endTime).toBeGreaterThan(4000)
     expect(endTime).toBeLessThan(6500)
+  })
+})
+
+describe('Closed patterns', () => {
+  it('returns the expected patterns - prefixSpan dataset', () => {
+    const options: VMSPOptions = {
+      minPatternLength: 1,
+      maxPatternLength: 8,
+      patternType: 'closed'
+    }
+    const minsup = 0.5
+    const algo: AlgoVMSP = new AlgoVMSP(options)
+    const [patterns, intersections, executionTime] =
+      algo.runFromSpmfFile('data/prefixSpan.txt', minsup)
+    let cpt = 0
+    expect(patterns.length).toStrictEqual(17)
+    expect(intersections).toStrictEqual(121)
+    expect(patterns[0].support).toBe(4)
+    expect(patterns[1].support).toBe(4)
+    expect(patterns[2].support).toBe(3)
+    expect(patterns[3].support).toBe(3)
+    expect(patterns[4].support).toBe(3)
+    expect(patterns[5].support).toBe(3)
+    expect(patterns[6].support).toBe(3)
+    expect(patterns[7].support).toBe(3)
+    expect(patterns[8].support).toBe(2)
+    expect(patterns[9].support).toBe(2)
+    expect(patterns[10].support).toBe(2)
+    expect(patterns[11].support).toBe(2)
+    expect(patterns[12].support).toBe(2)
+    expect(patterns[13].support).toBe(2)
+    expect(patterns[14].support).toBe(2)
+    expect(patterns[15].support).toBe(2)
+    expect(patterns[16].support).toBe(2)
+    expect(patterns[0].itemSets).toStrictEqual([[1], [3]])
+    expect(patterns[1].itemSets).toStrictEqual([[1], [2]])
+    expect(patterns[2].itemSets).toStrictEqual([[6]])
+    expect(patterns[3].itemSets).toStrictEqual([[5]])
+    expect(patterns[4].itemSets).toStrictEqual([[4], [3]])
+    expect(patterns[5].itemSets).toStrictEqual([[2], [3]])
+    expect(patterns[6].itemSets).toStrictEqual([[1], [3], [3]])
+    expect(patterns[7].itemSets).toStrictEqual([[1], [3], [2]])
+    expect(patterns[8].itemSets).toStrictEqual([[6], [2], [3]])
+    expect(patterns[9].itemSets).toStrictEqual([[5], [2], [3]])
+    expect(patterns[10].itemSets).toStrictEqual([[4], [3], [2]])
+    expect(patterns[11].itemSets).toStrictEqual([[1, 2], [6]])
+    expect(patterns[12].itemSets).toStrictEqual([[1], [2], [3]])
+    expect(patterns[13].itemSets).toStrictEqual([[5], [6], [3], [2]])
+    expect(patterns[14].itemSets).toStrictEqual([[5], [1], [3], [2]])
+    expect(patterns[15].itemSets).toStrictEqual([[1, 2], [4], [3]])
+    expect(patterns[16].itemSets).toStrictEqual([[1], [2, 3], [1]])
+  })
+
+  it('returns the expected patterns - dataset from the VMSP article', () => {
+    const options: VMSPOptions = {
+      patternType: 'closed',
+      minPatternLength: 1,
+      maxPatternLength: 5,
+      debug: true
+    }
+    const minsup = 0.3
+    const algo = new AlgoVMSP(options)
+    const [patterns, intersections, executionTime] =
+      algo.runFromSpmfFile('data/dataVMSP_sequencesFromPaper.txt', minsup)
+    let cpt = 0
+    expect(intersections).toStrictEqual(34)
+    expect(patterns.length).toStrictEqual(12)
+    expect(patterns[0].support).toBe(4)
+    expect(patterns[1].support).toBe(3)
+    expect(patterns[2].support).toBe(3)
+    expect(patterns[3].support).toBe(3)
+    expect(patterns[4].support).toBe(3)
+    expect(patterns[5].support).toBe(2)
+    expect(patterns[6].support).toBe(2)
+    expect(patterns[7].support).toBe(2)
+    expect(patterns[8].support).toBe(2)
+    expect(patterns[9].support).toBe(2)
+    expect(patterns[10].support).toBe(2)
+    expect(patterns[11].support).toBe(2)
+    expect(patterns[0].itemSets).toStrictEqual([[2], [6]])
+    expect(patterns[1].itemSets).toStrictEqual([[2], [5]])
+    expect(patterns[2].itemSets).toStrictEqual([[1], [6]])
+    expect(patterns[3].itemSets).toStrictEqual([[1], [5]])
+    expect(patterns[4].itemSets).toStrictEqual([[2], [6, 7]])
+    expect(patterns[5].itemSets).toStrictEqual([[1, 2]])
+    expect(patterns[6].itemSets).toStrictEqual([[1], [3], [6]])
+    expect(patterns[7].itemSets).toStrictEqual([[1], [2], [6]])
+    expect(patterns[8].itemSets).toStrictEqual([[1], [3], [5]])
+    expect(patterns[9].itemSets).toStrictEqual([[1], [2], [5]])
+    expect(patterns[10].itemSets).toStrictEqual([[2], [6, 7], [5]])
+    expect(patterns[11].itemSets).toStrictEqual([[1], [6, 7], [5]])
+  })
+
+  it('stops at execution time threshold and returns the obtains patterns so far', () => {
+    const options: VMSPOptions = {
+      minPatternLength: 1,
+      maxPatternLength: 8,
+      patternType: "closed",
+      executionTimeThresholdInSeconds: 2
+    }
+    const minsup = 0.002
+    const algo = new AlgoVMSP(options)
+    const startTime = Date.now()
+    const [patterns, intersections, executionTime] =
+      algo.runFromSpmfFile('data/dataVMSP_large.txt', minsup)
+    const endTime = Date.now() - startTime
+    console.log("Execution time: " + endTime)
+    console.log("Nbr of Patterns: " + patterns.length)
+    expect(endTime).toBeGreaterThan(2000)
+    expect(endTime).toBeLessThan(4300)
   })
 })

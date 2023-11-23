@@ -70,7 +70,9 @@ describe('checkIfItemsShouldBeSaved', () => {
       expect(checkIfItemsShouldBeSaved(items, bitmap, maxPatterns, 3, patternType)).toBeTruthy()
     })
 
-    it('returns false if maxgap is set and container support > containee support', () => {
+    it('returns false if maxgap is set and there is a container pattern, regardless of support', () => {
+      // Support comparison is disabled as an optimization when maxGap is public set because with maxGap a container pattern
+      // can have a bigger support than its containee. More info: https://forum2.philippe-fournier-viger.com/viewtopic.php?p=388#p388
       const prefix = new PrefixVMSP([new ItemSet([3, 4]), new ItemSet([5, 6]), new ItemSet([7, 8])])
       const pattern = new PatternVMSP(prefix, 3)
       patternsWithSixItems.add(pattern)
@@ -133,9 +135,17 @@ describe('checkIfItemsShouldBeSaved', () => {
       expect(checkIfItemsShouldBeSaved(items, bitmap, maxPatterns, 3, patternType)).toBeTruthy()
     })
 
-    it('returns false if maxgap is set and container support > containee support', () => {
+    it('returns true if maxgap is set and container support < containee support', () => {
       const prefix = new PrefixVMSP([new ItemSet([3, 4]), new ItemSet([5, 6]), new ItemSet([7, 8])])
       const pattern = new PatternVMSP(prefix, 3)
+      patternsWithSixItems.add(pattern)
+      const items = new PrefixVMSP([new ItemSet([3, 4]), new ItemSet([8])])
+      expect(checkIfItemsShouldBeSaved(items, bitmap, maxPatterns, 3, patternType, 1)).toBeTruthy()
+    })
+
+    it('returns false if maxgap is set and container support = containee support', () => {
+      const prefix = new PrefixVMSP([new ItemSet([3, 4]), new ItemSet([5, 6]), new ItemSet([7, 8])])
+      const pattern = new PatternVMSP(prefix, bitmap.getSupport())
       patternsWithSixItems.add(pattern)
       const items = new PrefixVMSP([new ItemSet([3, 4]), new ItemSet([8])])
       expect(checkIfItemsShouldBeSaved(items, bitmap, maxPatterns, 3, patternType, 1)).toBeFalsy()

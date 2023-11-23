@@ -18,13 +18,10 @@ export default function checkIfItemsShouldBeSaved(prefix: PrefixVMSP,
       }
       if (prefix.sumOfEvenItems <= pPrime.prefix.sumOfEvenItems &&
         prefix.sumOfOddItems <= pPrime.prefix.sumOfOddItems &&
-        (maxGap ||
-          (!maxGap && bitmap.getSupport() >= pPrime.support &&
-            (patternType === "maximal" || bitmap.getSupport() === pPrime.support)
-          )
-        )
+        (maxGap || (!maxGap && bitmap.getSupport() >= pPrime.support))
       ) {
-        if (strictlyContains(pPrime.prefix, prefix)) {
+        if ((patternType === 'maximal' || pPrime.support === bitmap.getSupport())
+          && strictlyContains(pPrime.prefix, prefix)) {
           return false
         }
       }
